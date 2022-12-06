@@ -1,18 +1,15 @@
 
-import logging
 import os
 from pathlib import Path
 from subprocess import run
 
 import psutil
 
+from .logger import logger
+from .utils import OPENVPN_CONFIG_DIR
+from .utils import write_vpn_auth_file
+
 OPENVPN_GUI_PATH = os.path.join('C:', os.sep, 'Program Files', 'OpenVPN', 'bin', 'openvpn-gui.exe')
-OPENVPN_CONFIG_DIR = os.path.expanduser(os.path.join('~', 'OpenVPN', 'config'))
-
-
-def write_vpn_auth_file(path, vpn_username, vpn_password):
-    with open(path, 'w') as fp:
-        fp.write(f'{vpn_username}\n{vpn_password}\n')
 
 
 def add_credentials_to_config(vpn_file_path, auth_file_path):
@@ -52,7 +49,7 @@ def connect(vpn_file_path, vpn_username=None, vpn_password=None, openvpn_gui_pat
     if connected is not None:
         disconnect(openvpn_gui_path=openvpn_gui_path)
     if vpn_username is not None and vpn_password is not None:
-        logging.info('Creating temporary vpn auth file...')
+        logger.info('Creating temporary vpn auth file...')
         auth_file_path = os.path.join(OPENVPN_CONFIG_DIR, f'{vpn_file_stem}.txt')
         new_vpn_file_path = os.path.join(OPENVPN_CONFIG_DIR, f'{vpn_file_stem}.ovpn')
         write_vpn_auth_file(auth_file_path, vpn_username, vpn_password)
